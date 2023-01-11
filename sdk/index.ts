@@ -1,1 +1,1 @@
-export { Protocol } from './lib/protocol';
+import { Protocol } from './lib/protocol';

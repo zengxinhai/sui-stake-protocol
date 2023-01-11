@@ -1,16 +1,26 @@
 import { Ed25519Keypair, JsonRpcProvider, RawSigner } from "@mysten/sui.js";
 
+type ConstructorParams = {
+  seed: Uint8Array,
+  pkgId: string,
+  protocolId: string,
+  adminCapId: string,
+  rewardType: string,
+  witName: string,
+}
 export class Protocol {
-  private witType: string;
-  private signer: RawSigner;
-  constructor(
-    seed: Uint8Array,
-    private pkgId: string,
-    private protocolId: string,
-    private adminCapId: string,
-    private rewardType: string,
-    witName: string,
-  ) {
+  private readonly pkgId: string;
+  private readonly protocolId: string;
+  private readonly adminCapId: string;
+  private readonly rewardType: string;
+  private readonly witType: string;
+  private readonly signer: RawSigner;
+  constructor(params: ConstructorParams) {
+    const { seed, pkgId, protocolId, adminCapId, rewardType, witName } = params;
+    this.pkgId = pkgId;
+    this.protocolId = protocolId;
+    this.adminCapId = adminCapId;
+    this.rewardType = rewardType;
     this.witType = `${pkgId}/${witName.toLowerCase()}/${witName.toUpperCase()}`;
     const keypair = Ed25519Keypair.fromSeed(seed);
     const provider = new JsonRpcProvider();
