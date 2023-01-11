@@ -15,5 +15,8 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@mysten/sui.js": "^0.22.0"
   }
 }
