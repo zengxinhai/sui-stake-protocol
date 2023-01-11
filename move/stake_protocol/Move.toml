@@ -1,0 +1,10 @@
+[package]
+name="StakeProtocol"
+version="0.0.1"
+
+[dependencies]
+Sui = { local = "../../../sui/crates/sui-framework" }
+Math = { local = "../math" }
+
+[addresses]
+stake_protocol="0x0"
