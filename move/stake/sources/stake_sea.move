@@ -15,6 +15,8 @@ module stake::stake_sea {
   use stake::action;
   use stake::check::StakeCheck;
   use sui::pay;
+  use sui::clock::Clock;
+  use sui::clock;
   
   const IndexStaked: u64 = 1000000000;
   
@@ -68,8 +70,9 @@ module stake::stake_sea {
     _: &StakeAdminCap<Wit>,
     self: &mut StakeSea<Wit, Reward>,
     rewardPerSec: u64,
-    now: u64,
+    clock: &Clock,
   ) {
+    let now = clock::timestamp_ms(clock);
     balance_bag::init_balance<StakeCoin>(&mut self.stakeBalances);
     pool::create_pool<StakeCoin>(&mut self.pools, rewardPerSec, IndexStaked, now);
   }
@@ -77,9 +80,10 @@ module stake::stake_sea {
   public fun stake<Wit, Reward, StakeCoin>(
     self: &mut StakeSea<Wit, Reward>,
     coin: Coin<StakeCoin>,
-    now: u64,
+    clock: &Clock,
     ctx: &mut TxContext
   ): StakeCheck<Wit, Reward, StakeCoin> {
+    let now = clock::timestamp_ms(clock);
     action::stake(coin, &mut self.pools, &mut self.stakeBalances, now, ctx)
   }
   
@@ -87,9 +91,10 @@ module stake::stake_sea {
     self: &mut StakeSea<Wit, Reward>,
     coins: vector<Coin<StakeCoin>>,
     amount: u64,
-    now: u64,
+    clock: &Clock,
     ctx: &mut TxContext
   ) {
+    let now = clock::timestamp_ms(clock);
     let (targetCoin, leftCoin) = split_coin_vec(coins, amount, ctx);
     transfer::transfer(leftCoin, tx_context::sender(ctx));
     
@@ -102,9 +107,10 @@ module stake::stake_sea {
     coins: vector<Coin<StakeCoin>>,
     amount: u64,
     stakeCheck: &mut StakeCheck<Wit, Reward, StakeCoin>,
-    now: u64,
+    clock: &Clock,
     ctx: &mut TxContext
   ) {
+    let now = clock::timestamp_ms(clock);
     let (targetCoin, leftCoin) = split_coin_vec(coins, amount, ctx);
     transfer::transfer(leftCoin, tx_context::sender(ctx));
     
@@ -115,8 +121,9 @@ module stake::stake_sea {
     self: &mut StakeSea<Wit, Reward>,
     stakeCheck: &mut StakeCheck<Wit, Reward, StakeCoin>,
     unstakeAmount: u64,
-    now: u64,
+    clock: &Clock,
   ): (Balance<StakeCoin>, Balance<Reward>) {
+    let now = clock::timestamp_ms(clock);
     let rewardTreasury = &mut self.rewardTreasury;
     action::unstake(stakeCheck, &mut self.pools, &mut self.stakeBalances, rewardTreasury, unstakeAmount, now)
   }
@@ -125,9 +132,10 @@ module stake::stake_sea {
     self: &mut StakeSea<Wit, Reward>,
     stakeCheck: &mut StakeCheck<Wit, Reward, StakeCoin>,
     unstakeAmount: u64,
-    now: u64,
+    clock: &Clock,
     ctx: &mut TxContext,
   ) {
+    let now = clock::timestamp_ms(clock);
     let (stakeCoinBanlance, rewardBalance) = unstake(self, stakeCheck, unstakeAmount, now);
     let sender = tx_context::sender(ctx);
     transfer::transfer(coin::from_balance(stakeCoinBanlance, ctx), sender);
